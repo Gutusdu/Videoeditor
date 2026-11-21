@@ -64,8 +64,7 @@ $('export').onclick=async()=>{
     if(!c.captureStream)throw Error('Canvas-Aufnahme wird von diesem Safari nicht unterstützt.');
     const mime=['video/mp4;codecs="avc1.42E01E, mp4a.40.2"','video/mp4;codecs=avc1.42E01E','video/mp4'].find(x=>MediaRecorder.isTypeSupported(x));
     if(!mime)throw Error('Dieser iPhone-Safari unterstützt keine MP4-Aufnahme. Es wurde keine falsche MP4-Datei erstellt.');
-    const durations=scenes.map(s=>Math.max(1,+s.duration||5));
-    const totalDuration=durations.reduce((a,b)=>a+b,0);
+    const baseDurations=scenes.map(s=>Math.max(1,+s.duration||5));
     const AudioContextClass=window.AudioContext||window.webkitAudioContext;
     const audioScenes=scenes.map((scene,index)=>({scene,index})).filter(x=>x.scene.audio);
     if(audioScenes.length&&!AudioContextClass)throw Error('AudioContext wird von diesem Safari nicht unterstützt.');
@@ -87,6 +86,13 @@ $('export').onclick=async()=>{
       const buffer=await audioCtx.decodeAudioData(bytes);
       decoded.push({...item,buffer});
     }
+    // Jede Szene bleibt mindestens so lange sichtbar wie ihr Sprecher-Audio.
+    // Ein kleiner Puffer verhindert, dass das letzte Audiostück am Szenenwechsel abgeschnitten wird.
+    const durations=baseDurations.map((duration,index)=>{
+      const audio=decoded.find(item=>item.index===index);
+      return audio?Math.max(duration,audio.buffer.duration+0.35):duration;
+    });
+    const totalDuration=durations.reduce((a,b)=>a+b,0);
     let offset=0;
     const offsets=durations.map(d=>{const here=offset;offset+=d;return here});
     const audioStartAt=audioCtx?audioCtx.currentTime+0.2:0;
