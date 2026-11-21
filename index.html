@@ -58,101 +58,76 @@ $('load').onclick=()=>{let i=document.createElement('input');i.type='file';i.acc
 let playFrame=0; $('play').onclick=()=>{if(playing){playing=false;cancelAnimationFrame(playFrame);$('play').textContent='▶ Vorschau';return}playing=true;$('play').textContent='Ⅱ Stop';let sceneStart=performance.now(),sceneIndex=active;function step(now){if(!playing)return;let duration=Math.max(3,+scenes[sceneIndex].duration||5)*1000,p=Math.min(1,(now-sceneStart)/duration);active=sceneIndex;render(p);if(p>=1){sceneIndex=(sceneIndex+1)%scenes.length;active=sceneIndex;sceneStart=now;lists();editor()}playFrame=requestAnimationFrame(step)}playFrame=requestAnimationFrame(step)};
 $('export').onclick=async()=>{
   const btn=$('export');btn.disabled=true;
-  let ffmpeg=null,clips=[],audioCtx=null;
+  let audioCtx=null,recorder=null,stream=null,dest=null;
   const setStatus=t=>$('status').textContent=t;
   try{
     if(!window.MediaRecorder||!c.captureStream)throw Error('Dieser Safari unterstützt die benötigte Videoaufnahme nicht.');
     const mime=['video/mp4;codecs="avc1.42E01E, mp4a.40.2"','video/mp4;codecs=avc1.42E01E','video/mp4'].find(x=>MediaRecorder.isTypeSupported(x));
     if(!mime)throw Error('Safari bietet auf diesem Gerät keine MP4-Aufnahme an.');
     const AudioContextClass=window.AudioContext||window.webkitAudioContext;
-    if(AudioContextClass){
+    const decoded=new Map();
+    if(scenes.some(s=>s.audio)){
+      if(!AudioContextClass)throw Error('AudioContext wird nicht unterstützt.');
       audioCtx=new AudioContextClass();
       await audioCtx.resume();
+      for(let i=0;i<scenes.length;i++){
+        if(!scenes[i].audio)continue;
+        setStatus('Audio '+(i+1)+'/'+scenes.length+' wird vorbereitet …');
+        const response=await fetch(scenes[i].audio);
+        if(!response.ok)throw Error('Audiodatei in Szene '+(i+1)+' konnte nicht geladen werden.');
+        decoded.set(i,await audioCtx.decodeAudioData(await response.arrayBuffer()));
+      }
+      dest=audioCtx.createMediaStreamDestination();
     }
-    const decoded=new Map();
-    for(let i=0;i<scenes.length;i++){
-      if(!scenes[i].audio)continue;
-      if(!audioCtx)throw Error('AudioContext wird nicht unterstützt.');
-      setStatus('Audio wird vorbereitet …');
-      const response=await fetch(scenes[i].audio);
-      if(!response.ok)throw Error('Eine Audiodatei konnte nicht geladen werden.');
-      decoded.set(i,await audioCtx.decodeAudioData(await response.arrayBuffer()));
-    }
-    const durations=scenes.map((s,i)=>Math.max(1,+s.duration||5,decoded.has(i)?decoded.get(i).duration+0.35:0));
-    // Jede Szene wird separat aufgenommen. Der AudioContext bleibt über alle
-    // Clips derselbe, damit Safari nicht bei jedem Szenenwechsel neu starten muss.
+    stream=c.captureStream(30);
+    if(dest)stream.addTrack(dest.stream.getAudioTracks()[0]);
+    const chunks=[];
+    recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:5000000});
+    recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+    const stopped=new Promise((resolve,reject)=>{
+      recorder.onstop=resolve;
+      recorder.onerror=e=>reject(e.error||new Error('Fehler bei der Videoaufnahme.'));
+    });
+    recorder.start(1000);
     for(let i=0;i<scenes.length;i++){
       active=i;
       render(0);
-      let sceneStream=c.captureStream(30),dest=null,source=null;
-      if(audioCtx){
-        dest=audioCtx.createMediaStreamDestination();
-        sceneStream.addTrack(dest.stream.getAudioTracks()[0]);
-        if(decoded.has(i)){
-          source=audioCtx.createBufferSource();
-          source.buffer=decoded.get(i);
-          source.connect(dest);
-        }
+      const duration=Math.max(1,+scenes[i].duration||5,decoded.has(i)?decoded.get(i).duration+0.35:0);
+      let source=null;
+      if(decoded.has(i)){
+        source=audioCtx.createBufferSource();
+        source.buffer=decoded.get(i);
+        source.connect(dest);
+        source.start();
       }
-      const recorder=new MediaRecorder(sceneStream,{mimeType:mime,videoBitsPerSecond:5000000});
-      const chunks=[];
-      recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
-      const stopped=new Promise((resolve,reject)=>{
-        recorder.onstop=resolve;
-        recorder.onerror=e=>reject(e.error||new Error('Aufnahmefehler in Szene '+(i+1)));
-      });
-      setStatus('Szene '+(i+1)+'/'+scenes.length+' wird aufgenommen …');
-      recorder.start();
-      if(source)source.start();
+      setStatus('Szene '+(i+1)+'/'+scenes.length+' wird aufgenommen … 0%');
       const began=performance.now();
       await new Promise((resolve,reject)=>{
         const frame=now=>{
           try{
             const elapsed=(now-began)/1000;
-            render(Math.min(1,elapsed/durations[i]));
-            if(elapsed<durations[i])requestAnimationFrame(frame);else resolve();
+            render(Math.min(1,elapsed/duration));
+            const pct=Math.min(100,Math.round(elapsed/duration*100));
+            setStatus('Szene '+(i+1)+'/'+scenes.length+' wird aufgenommen … '+pct+'%');
+            if(elapsed<duration)requestAnimationFrame(frame);else resolve();
           }catch(e){reject(e)}
         };
         requestAnimationFrame(frame);
       });
-      recorder.stop();
-      await stopped;
       if(source){try{source.stop()}catch{}source.disconnect();}
-      const blob=new Blob(chunks,{type:mime});
-      if(!blob.size)throw Error('Szene '+(i+1)+' wurde leer aufgenommen.');
-      clips.push(blob);
-      sceneStream.getTracks().forEach(t=>t.stop());
-      const pct=Math.round(clips.length/scenes.length*70);
-      setStatus('Szenen aufgenommen … '+pct+'% ('+clips.length+'/'+scenes.length+')');
     }
-    setStatus('Videos werden zusammengefügt … FFmpeg wird geladen.');
-    if(!window.FFmpeg){
-      await new Promise((resolve,reject)=>{
-        const script=document.createElement('script');
-        script.src='https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js';
-        script.onload=resolve;script.onerror=()=>reject(new Error('FFmpeg konnte nicht geladen werden. Bitte Internetverbindung prüfen.'));
-        document.head.appendChild(script);
-      });
-    }
-    if(!window.FFmpeg||!window.FFmpeg.createFFmpeg)throw Error('FFmpeg ist in diesem Safari nicht verfügbar.');
-    ffmpeg=window.FFmpeg.createFFmpeg({log:false,corePath:'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js'});
-    await ffmpeg.load();
-    for(let i=0;i<clips.length;i++){
-      setStatus('Clip '+(i+1)+'/'+clips.length+' wird vorbereitet …');
-      ffmpeg.FS('writeFile','scene'+i+'.mp4',new Uint8Array(await clips[i].arrayBuffer()));
-    }
-    const concat=clips.map((_,i)=>"file 'scene"+i+".mp4'").join('\n');
-    ffmpeg.FS('writeFile','list.txt',new TextEncoder().encode(concat));
-    setStatus('MP4 wird zusammengesetzt …');
-    await ffmpeg.run('-f','concat','-safe','0','-i','list.txt','-c','copy','-movflags','+faststart','final.mp4');
-    const output=ffmpeg.FS('readFile','final.mp4');
-    const finalBlob=new Blob([output.buffer],{type:'video/mp4'});
-    if(!finalBlob.size)throw Error('Die zusammengesetzte MP4-Datei ist leer.');
+    setStatus('Video wird finalisiert …');
+    recorder.stop();
+    await stopped;
+    const finalBlob=new Blob(chunks,{type:mime});
+    if(!finalBlob.size)throw Error('Die Videoaufnahme ist leer.');
     download(finalBlob,'touchline-studio.mp4');
-    setStatus('MP4 erstellt. Alle Szenen wurden zusammengesetzt. In Safari über das Download-Symbol sichern.');
+    setStatus('MP4 erstellt. Alle Szenen wurden in einer durchgehenden Aufnahme exportiert. In Safari über das Download-Symbol sichern.');
   }catch(e){
+    if(recorder&&recorder.state!=='inactive')try{recorder.stop()}catch{}
     setStatus('MP4-Export fehlgeschlagen: '+(e&&e.message?e.message:String(e)));
   }finally{
+    if(stream)stream.getTracks().forEach(t=>t.stop());
     if(audioCtx&&audioCtx.state!=='closed')try{await audioCtx.close()}catch{}
     btn.disabled=false;refresh();
   }
