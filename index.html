@@ -79,7 +79,18 @@ $('export').onclick=async()=>{
       }
       dest=audioCtx.createMediaStreamDestination();
     }
-    stream=c.captureStream(30);
+    // Frames werden manuell in einem festen 30-FPS-Takt angefordert,
+    // damit TikTok keine unregelmäßigen Canvas-Zeitstempel interpretieren muss.
+    let videoTrack;
+    try{
+      stream=c.captureStream(0);
+      videoTrack=stream.getVideoTracks()[0];
+      if(!videoTrack||typeof videoTrack.requestFrame!=='function')throw Error('Manuelle Frame-Aufnahme nicht verfügbar.');
+    }catch(e){
+      if(stream)stream.getTracks().forEach(t=>t.stop());
+      stream=c.captureStream(30);
+      videoTrack=stream.getVideoTracks()[0];
+    }
     if(dest)stream.addTrack(dest.stream.getAudioTracks()[0]);
     const chunks=[];
     recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:5000000});
@@ -103,16 +114,20 @@ $('export').onclick=async()=>{
       setStatus('Szene '+(i+1)+'/'+scenes.length+' wird aufgenommen … 0%');
       const began=performance.now();
       await new Promise((resolve,reject)=>{
-        const frame=now=>{
+        let lastStatus=0;
+        const timer=setInterval(()=>{
           try{
-            const elapsed=(now-began)/1000;
+            const elapsed=(performance.now()-began)/1000;
             render(Math.min(1,elapsed/duration));
-            const pct=Math.min(100,Math.round(elapsed/duration*100));
-            setStatus('Szene '+(i+1)+'/'+scenes.length+' wird aufgenommen … '+pct+'%');
-            if(elapsed<duration)requestAnimationFrame(frame);else resolve();
-          }catch(e){reject(e)}
-        };
-        requestAnimationFrame(frame);
+            if(videoTrack&&typeof videoTrack.requestFrame==='function')videoTrack.requestFrame();
+            if(elapsed-lastStatus>=0.5){
+              lastStatus=elapsed;
+              const pct=Math.min(100,Math.round(elapsed/duration*100));
+              setStatus('Szene '+(i+1)+'/'+scenes.length+' wird aufgenommen … '+pct+'%');
+            }
+            if(elapsed>=duration){clearInterval(timer);resolve()}
+          }catch(e){clearInterval(timer);reject(e)}
+        },1000/30);
       });
       if(source){try{source.stop()}catch{}source.disconnect();}
     }
