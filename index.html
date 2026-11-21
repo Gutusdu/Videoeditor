@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b1118"><title>TOUCHLINE STUDIO</title>
 <style>:root{color-scheme:dark;--bg:#080d12;--panel:#111a22;--line:#263642;--muted:#8fa2af;--text:#f4f7f8;--lime:#c8f169;--blue:#77b9ff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#1b2a32 0,#080d12 52%);color:var(--text);font:14px/1.45 Inter,system-ui,sans-serif}button,input,textarea,select{font:inherit}button{border:1px solid #344653;background:#1a2731;color:var(--text);padding:10px 13px;border-radius:10px;cursor:pointer;font-weight:750;transition:.18s}button:hover{border-color:var(--lime);transform:translateY(-1px)}button.primary{background:var(--lime);color:#10160a;border-color:var(--lime)}button:disabled{opacity:.45;cursor:not-allowed}header{height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(14px,3vw,42px);border-bottom:1px solid #26343e;background:#0a1118ee;position:sticky;top:0;z-index:3;backdrop-filter:blur(18px)}.logo{font-weight:1000;letter-spacing:.15em;font-size:15px}.logo span{color:var(--lime)}.tag{font-size:10px;color:var(--lime);border:1px solid #556b32;border-radius:30px;padding:6px 10px;margin-right:8px;letter-spacing:.12em;font-weight:900}.version{display:inline-flex;align-items:center;gap:6px;font-size:9px;color:#dce7e8;border:1px solid #3b505b;border-radius:30px;padding:6px 9px;margin-right:8px;letter-spacing:.08em;font-weight:850;white-space:nowrap}.version strong{color:var(--lime)}.layout{max-width:1800px;margin:auto;padding:18px;display:grid;grid-template-columns:270px minmax(340px,1fr) 330px;gap:16px;min-height:calc(100vh - 70px)}.panel{background:linear-gradient(145deg,#15212b,#101820);border:1px solid #293b47;border-radius:16px;overflow:hidden;box-shadow:0 18px 50px #0003}.head{padding:15px 17px;border-bottom:1px solid #293b47;font-size:10px;letter-spacing:.16em;font-weight:950;color:#b9c9d1}.pad{padding:16px}.field{margin-bottom:13px}.field label{display:block;font-size:10px;letter-spacing:.1em;color:#a9bbc6;font-weight:900;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;border:1px solid #344753;background:#0b131a;color:var(--text);padding:11px;border-radius:9px;outline:none}.field textarea{min-height:84px;resize:vertical}.field input:focus,.field textarea:focus{border-color:var(--lime);box-shadow:0 0 0 3px #c8f16918}.muted{color:var(--muted);font-size:11px}.scene{display:flex;align-items:center;gap:10px;width:100%;text-align:left;margin-bottom:8px;background:#101a22;border-color:#263945}.scene.active{border-color:var(--lime);background:#202b1b;box-shadow:inset 3px 0 var(--lime)}.num{background:#2b3b45;border-radius:7px;padding:6px 8px;color:var(--lime);font-size:11px;font-weight:900}.main{min-width:0;display:flex;flex-direction:column;gap:14px}.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.bar b{font-size:15px}.stage{background:radial-gradient(ellipse at 50% 40%,#243640,#101820 70%);border:1px solid #2a3c47;border-radius:17px;min-height:620px;display:flex;justify-content:center;align-items:center;padding:20px;position:relative;overflow:hidden}.stage:before{content:"";position:absolute;inset:14px;border:1px solid #ffffff0a;border-radius:12px;pointer-events:none}canvas{width:min(100%,360px);height:auto;aspect-ratio:9/16;border-radius:12px;background:#101820;box-shadow:0 22px 65px #000b,0 0 0 1px #ffffff1c}.timeline{display:flex;gap:8px;overflow:auto;padding:12px 0}.tile{min-width:122px;text-align:left;font-size:11px;background:#101a22;border-color:#293c47}.tile.active{border-color:var(--lime);background:#202b1b}.tile b{display:block;margin-bottom:4px}.actions{display:flex;gap:8px;flex-wrap:wrap}.section{font-size:10px;letter-spacing:.15em;color:#9db0bb;font-weight:950;margin:19px 0 10px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.status{font-size:11px;color:#c4d2d8;min-height:20px;margin-top:9px}.danger{color:#ff9eaa}.hint{padding:12px;background:#1b2818;border:1px solid #4b6031;border-radius:10px;font-size:11px;color:#d7e9b8}.right .pad,.left .pad{max-height:calc(100vh - 120px);overflow:auto}@media(max-width:1150px){.layout{grid-template-columns:230px minmax(300px,1fr)}.right{grid-column:1/-1}.right .pad{max-height:none;display:grid;grid-template-columns:1fr 1fr;gap:0 16px}}@media(max-width:740px){header{height:60px;padding:0 8px}.logo{font-size:11px;letter-spacing:.1em}.tag{display:none}.version{font-size:8px;padding:5px 6px;margin-right:2px}.layout{display:flex;flex-direction:column;padding:8px;gap:10px}.main{order:1}.left{order:2}.right{order:3}.stage{min-height:0;padding:10px}.right .pad{display:block}.left .pad{max-height:none}canvas{width:min(100%,320px)}.bar .muted{font-size:10px}}.cc-tools{margin-top:18px;padding-top:16px;border-top:1px solid #293b47}.cc-results{display:grid;gap:10px;margin-top:12px}.cc-result{display:grid;grid-template-columns:104px minmax(0,1fr);gap:10px;padding:10px;background:#0c151c;border:1px solid #2b3e49;border-radius:12px}.cc-result img{width:104px;height:104px;object-fit:cover;border-radius:8px;background:#182630}.cc-result b{font-size:12px;display:block;line-height:1.3}.cc-meta{font-size:10px;color:#a9bbc6;margin:5px 0;overflow-wrap:anywhere}.cc-actions{display:flex;gap:6px;flex-wrap:wrap}.cc-actions button,.cc-actions a{font-size:10px;padding:7px 9px;border-radius:8px;text-decoration:none}.cc-actions a{border:1px solid #344653;background:#1a2731;color:#f4f7f8}.cc-license{display:inline-block;font-size:9px;font-weight:900;color:#c8f169;border:1px solid #556b32;border-radius:20px;padding:3px 7px;margin:3px 0}.cc-status{font-size:11px;color:#c4d2d8;margin-top:8px;min-height:18px}.cc-search{display:grid;grid-template-columns:1fr;gap:8px}.cc-search input,.cc-search select{width:100%;border:1px solid #344753;background:#0b131a;color:var(--text);padding:11px;border-radius:9px}.cc-note{font-size:10px;color:#91a5b0;line-height:1.5;margin-top:9px}@media(max-width:740px){.cc-result{grid-template-columns:88px minmax(0,1fr)}.cc-result img{width:88px;height:88px}}</style></head><body>
-<header><div class="logo">TOUCHLINE <span>STUDIO</span></div><div style="display:flex;align-items:center;gap:6px"><span class="tag">BETA · LOKAL</span><span class="version" title="Website-Version und Build"><strong>v0.4.9</strong> · BUILD 13</span><button id="new">Neues Projekt</button></div></header>
+<header><div class="logo">TOUCHLINE <span>STUDIO</span></div><div style="display:flex;align-items:center;gap:6px"><span class="tag">BETA · LOKAL</span><span class="version" title="Website-Version und Build"><strong>v0.4.9</strong> · BUILD 14</span><button id="new">Neues Projekt</button></div></header>
 <div class="layout">
 <aside class="panel left"><div class="head">PROJEKT & SZENEN</div><div class="pad">
 <div class="field"><label>VIDEOTITEL</label><input id="projectTitle" value="MATCH ANALYSIS"></div><div class="field"><label>UNTERTITEL</label><input id="projectSub" value="TACTICAL BREAKDOWN"></div><div class="section">TEAMS & LOGOS</div><div class="field"><label>HEIMTEAM</label><input id="homeName" value="HEIMTEAM"><input id="homeLogo" type="file" accept="image/*"></div><div class="field"><label>AUSWÄRTSTEAM</label><input id="awayName" value="AUSWÄRTSTEAM"><input id="awayLogo" type="file" accept="image/*"></div>
@@ -56,7 +56,96 @@ function download(blob,name){let a=document.createElement('a'),u=URL.createObjec
 $('save').onclick=()=>download(new Blob([JSON.stringify({title:$('projectTitle').value,sub:$('projectSub').value,homeName,awayName,homeLogo,awayLogo,scenes},null,2)],{type:'application/json'}),'touchline-project.json');
 $('load').onclick=()=>{let i=document.createElement('input');i.type='file';i.accept='.json,application/json';i.onchange=async()=>{try{let d=JSON.parse(await i.files[0].text());if(!Array.isArray(d.scenes))throw Error();scenes=d.scenes;active=0;$('projectTitle').value=d.title||'';$('projectSub').value=d.sub||'';homeName=d.homeName||'HEIMTEAM';awayName=d.awayName||'AUSWÄRTSTEAM';homeLogo=d.homeLogo||'';awayLogo=d.awayLogo||'';refresh();$('status').textContent='Projekt geladen.'}catch{$('status').textContent='Ungültige Projektdatei.'}};i.click()};
 let playFrame=0; $('play').onclick=()=>{if(playing){playing=false;cancelAnimationFrame(playFrame);$('play').textContent='▶ Vorschau';return}playing=true;$('play').textContent='Ⅱ Stop';let sceneStart=performance.now(),sceneIndex=active;function step(now){if(!playing)return;let duration=Math.max(3,+scenes[sceneIndex].duration||5)*1000,p=Math.min(1,(now-sceneStart)/duration);active=sceneIndex;render(p);if(p>=1){sceneIndex=(sceneIndex+1)%scenes.length;active=sceneIndex;sceneStart=now;lists();editor()}playFrame=requestAnimationFrame(step)}playFrame=requestAnimationFrame(step)};
-$('export').onclick=async()=>{let btn=$('export');btn.disabled=true;$('status').textContent='MP4-Export läuft. Bitte Safari geöffnet lassen …';let audioCtx=null,audioDest=null,stream=null,rec=null;try{if(!window.MediaRecorder)throw Error('Safari unterstützt MediaRecorder auf diesem Gerät nicht. Bitte iOS aktualisieren.');const mime=['video/mp4;codecs="avc1.42E01E, mp4a.40.2"','video/mp4;codecs=avc1.42E01E','video/mp4'].find(x=>MediaRecorder.isTypeSupported(x));if(!mime)throw Error('Dieser iPhone-Safari unterstützt keine MP4-Aufnahme. Es wurde keine falsche MP4-Datei erstellt.');stream=c.captureStream(30);const AudioContextClass=window.AudioContext||window.webkitAudioContext;if(AudioContextClass){audioCtx=new AudioContextClass();audioDest=audioCtx.createMediaStreamDestination();stream.addTrack(audioDest.stream.getAudioTracks()[0]);await audioCtx.resume()}rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:8000000});let chunks=[];rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};const done=new Promise((resolve,reject)=>{rec.onstop=resolve;rec.onerror=e=>reject(e.error||new Error('Aufnahmefehler'))});rec.start(1000);for(let i=0;i<scenes.length;i++){active=i;lists();editor();const scene=cur(),duration=Math.max(1,+scene.duration||5);let audio=null,source=null;if(scene.audio&&audioCtx){const blob=await(await fetch(scene.audio)).blob(),url=URL.createObjectURL(blob);audio=new Audio(url);source=audioCtx.createMediaElementSource(audio);source.connect(audioDest);audio._objectUrl=url;await audio.play().catch(()=>{})}const start=performance.now();await new Promise(resolve=>{function frame(now){const p=Math.min(1,(now-start)/(duration*1000));render(p);if(p<1)requestAnimationFrame(frame);else resolve()}requestAnimationFrame(frame)});if(audio){audio.pause();if(source)source.disconnect();URL.revokeObjectURL(audio._objectUrl)}}rec.stop();await done;const blob=new Blob(chunks,{type:'video/mp4'});if(!blob.size)throw Error('Die MP4-Aufnahme ist leer. Bitte erneut versuchen.');download(blob,'touchline-studio.mp4');$('status').textContent='MP4 erstellt. In Safari auf das Download-Symbol tippen und die Datei unter „Dateien“ sichern. Für Fotos anschließend „Video sichern“ verwenden.'}catch(e){if(rec&&rec.state!=='inactive')try{rec.stop()}catch{}$('status').textContent='MP4-Export fehlgeschlagen: '+(e&&e.message?e.message:String(e))}finally{if(stream)stream.getTracks().forEach(t=>t.stop());if(audioCtx&&audioCtx.state!=='closed')await audioCtx.close();btn.disabled=false;refresh()}};
+$('export').onclick=async()=>{
+  const btn=$('export');btn.disabled=true;$('status').textContent='MP4-Export wird vorbereitet … Safari geöffnet lassen.';
+  let audioCtx=null,audioDest=null,stream=null,rec=null,sourceNodes=[];
+  try{
+    if(!window.MediaRecorder)throw Error('Safari unterstützt MediaRecorder auf diesem Gerät nicht. Bitte iOS aktualisieren.');
+    if(!c.captureStream)throw Error('Canvas-Aufnahme wird von diesem Safari nicht unterstützt.');
+    const mime=['video/mp4;codecs="avc1.42E01E, mp4a.40.2"','video/mp4;codecs=avc1.42E01E','video/mp4'].find(x=>MediaRecorder.isTypeSupported(x));
+    if(!mime)throw Error('Dieser iPhone-Safari unterstützt keine MP4-Aufnahme. Es wurde keine falsche MP4-Datei erstellt.');
+    const durations=scenes.map(s=>Math.max(1,+s.duration||5));
+    const totalDuration=durations.reduce((a,b)=>a+b,0);
+    const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+    const audioScenes=scenes.map((scene,index)=>({scene,index})).filter(x=>x.scene.audio);
+    if(audioScenes.length&&!AudioContextClass)throw Error('AudioContext wird von diesem Safari nicht unterstützt.');
+    stream=c.captureStream(30);
+    if(AudioContextClass){
+      audioCtx=new AudioContextClass();
+      audioDest=audioCtx.createMediaStreamDestination();
+      stream.addTrack(audioDest.stream.getAudioTracks()[0]);
+      await audioCtx.resume();
+    }
+    // Decode every scene's audio before recording. One continuous Web Audio
+    // timeline prevents an individual MP3 from ending or interrupting the video.
+    const decoded=[];
+    for(const item of audioScenes){
+      $('status').textContent='Audio wird vorbereitet …';
+      const response=await fetch(item.scene.audio);
+      if(!response.ok)throw Error('Eine Audiodatei konnte nicht geladen werden.');
+      const bytes=await response.arrayBuffer();
+      const buffer=await audioCtx.decodeAudioData(bytes);
+      decoded.push({...item,buffer});
+    }
+    let offset=0;
+    const offsets=durations.map(d=>{const here=offset;offset+=d;return here});
+    const audioStartAt=audioCtx?audioCtx.currentTime+0.2:0;
+    for(const item of decoded){
+      const source=audioCtx.createBufferSource();
+      const gain=audioCtx.createGain();
+      source.buffer=item.buffer;
+      gain.gain.value=1;
+      source.connect(gain);gain.connect(audioDest);
+      const startAt=audioStartAt+offsets[item.index];
+      source.start(startAt);
+      source.stop(startAt+durations[item.index]);
+      sourceNodes.push(source);
+    }
+    rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:8000000});
+    const chunks=[];
+    rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+    const done=new Promise((resolve,reject)=>{
+      rec.onstop=resolve;
+      rec.onerror=e=>reject(e.error||new Error('Aufnahmefehler'));
+    });
+    $('status').textContent='MP4-Export läuft … 0%';
+    // Avoid Safari's flaky periodic MediaRecorder timeslice; collect one
+    // complete recording and flush it once at stop.
+    rec.start();
+    const videoStart=performance.now();
+    await new Promise(resolve=>{
+      function drawFrame(now){
+        const elapsed=(now-videoStart)/1000;
+        let sceneIndex=0,remaining=elapsed;
+        while(sceneIndex<durations.length-1&&remaining>=durations[sceneIndex]){
+          remaining-=durations[sceneIndex];sceneIndex++;
+        }
+        active=sceneIndex;
+        const scene=cur();
+        lists();editor();
+        render(Math.min(1,remaining/durations[sceneIndex]));
+        const percent=Math.min(100,Math.round(elapsed/totalDuration*100));
+        $('status').textContent='MP4-Export läuft … '+percent+'%';
+        if(elapsed<totalDuration)requestAnimationFrame(drawFrame);else resolve();
+      }
+      requestAnimationFrame(drawFrame);
+    });
+    rec.stop();
+    await done;
+    const blob=new Blob(chunks,{type:mime});
+    if(!blob.size)throw Error('Die MP4-Aufnahme ist leer. Bitte erneut versuchen.');
+    download(blob,'touchline-studio.mp4');
+    $('status').textContent='MP4 erstellt. Alle Szenen wurden exportiert. In Safari auf das Download-Symbol tippen und die Datei unter „Dateien“ sichern.';
+  }catch(e){
+    if(rec&&rec.state!=='inactive')try{rec.stop()}catch{}
+    $('status').textContent='MP4-Export fehlgeschlagen: '+(e&&e.message?e.message:String(e));
+  }finally{
+    sourceNodes.forEach(s=>{try{s.disconnect()}catch{}});
+    if(stream)stream.getTracks().forEach(t=>t.stop());
+    if(audioCtx&&audioCtx.state!=='closed')await audioCtx.close();
+    btn.disabled=false;refresh();
+  }
+};
 function persist(){try{localStorage.setItem('touchline-studio-project',JSON.stringify({title:$('projectTitle').value,sub:$('projectSub').value,homeName,awayName,homeLogo,awayLogo,scenes}))}catch(e){}}
 function restore(){try{let raw=localStorage.getItem('touchline-studio-project');if(!raw)return;let d=JSON.parse(raw);if(Array.isArray(d.scenes)&&d.scenes.length){scenes=d.scenes;active=0;$('projectTitle').value=d.title||'MATCH ANALYSIS';$('projectSub').value=d.sub||'';homeName=d.homeName||'HEIMTEAM';awayName=d.awayName||'AUSWÄRTSTEAM';homeLogo=d.homeLogo||'';awayLogo=d.awayLogo||''}}catch(e){}}
 
