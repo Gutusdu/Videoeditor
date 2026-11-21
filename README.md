@@ -1,30 +1,30 @@
 # TOUCHLINE STUDIO
 
-A free, browser-based football analysis video editor for vertical short-form videos.
+A free, browser-based editor for football-analysis videos in vertical 9:16 format.
 
-## Run
-Open `index.html` in a modern browser. No build step, account, API key, or paid service is required.
+## Open
+Visit the published GitHub Pages site: https://gutusdu.github.io/Videoeditor/
 
-## Current features
-- 9:16 canvas preview (1080 × 1920)
-- Scene templates: hook, stats comparison, tactics board, player spotlight, prediction
-- Edit, duplicate, reorder, and delete scenes
-- Timeline and scene-duration estimate
-- Local project export/import as JSON
-- Browser-native WebM video export
+## Features
+- Responsive dark sports-broadcast interface
+- 1080 × 1920 video canvas for TikTok, Reels and Shorts
+- Scene templates: hook, statistics comparison, tactics board, player spotlight and prediction
+- Editable scene text, statistics, formations and probabilities
+- Reorder, duplicate and remove scenes
+- Animated title reveals and progressive statistic bars in the video export
+- Browser-native WebM export
+- Automatic local browser save plus manual JSON import/export
+- No account, paid API or server required
 
-## Important limitations
-- Statistics and player information are entered manually. The app does not fetch live match data.
-- It does not currently provide verified event data, player tracking, heatmaps, pass maps, or automated tactical analysis. Never present manually entered or illustrative values as verified facts.
-- Video export is WebM. MP4 conversion and integrated voice-over/subtitle workflows are not implemented yet.
-- Projects remain in the browser unless exported as JSON.
+## Current limitations
+- Match and player statistics are entered manually; no live-data provider is connected.
+- No verified event-data feed, tracking data, automated heatmaps, pass maps or automatic tactical analysis.
+- Player portrait is a stylized placeholder, not a real player photo.
+- Export is WebM, not MP4. Voice-over recording, audio mixing and timed subtitle editing are not yet implemented.
+- Browser-local autosave is tied to the current browser/device. Export JSON to move a project elsewhere.
 
-## Roadmap
-1. Reliable data-source workflow with citations and provenance per statistic.
-2. Tactical board with editable player positions, arrows, and movement paths.
-3. Voice-over recording, timed subtitles, and audio/video synchronization.
-4. MP4 export where browser support permits, with a documented fallback.
-5. Responsive editing workflow and robust project persistence.
+## Data integrity
+Do not publish illustrative or placeholder values as real match statistics. Add reliable sources and verify all values before publishing.
 
-## Privacy
-The current app is client-side. It does not send project content to a server.
+## Technology
+Single-file HTML/CSS/JavaScript app. No build step.
