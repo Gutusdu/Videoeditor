@@ -151,7 +151,7 @@ $('export').onclick=async()=>{
     const hasAudio=decoded.size>0;
     const args=['-i','source.mp4','-map','0:v:0'];
     if(hasAudio)args.push('-map','0:a:0?');
-    args.push('-vf','fps=30,format=yuv420p','-r','30','-vsync','cfr','-c:v','libx264','-preset','ultrafast','-profile:v','high','-level','4.1','-pix_fmt','yuv420p','-b:v','6M','-maxrate','8M','-bufsize','12M');
+    args.push('-vf','fps=30,scale=1080:1920:flags=lanczos,setsar=1,format=yuv420p','-r','30','-vsync','cfr','-c:v','libx264','-preset','ultrafast','-profile:v','high','-level','4.1','-pix_fmt','yuv420p','-b:v','6M','-maxrate','8M','-bufsize','12M','-g','60','-keyint_min','60','-sc_threshold','0');
     if(hasAudio)args.push('-c:a','aac','-b:a','192k','-ar','48000','-af','aresample=async=1:first_pts=0');
     else args.push('-an');
     args.push('-movflags','+faststart','-video_track_timescale','90000','tiktok.mp4');
