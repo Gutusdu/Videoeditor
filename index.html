@@ -154,7 +154,7 @@ $('export').onclick=async()=>{
     args.push('-vf','fps=30,format=yuv420p','-r','30','-vsync','cfr','-c:v','libx264','-preset','ultrafast','-profile:v','high','-level','4.1','-pix_fmt','yuv420p','-b:v','6M','-maxrate','8M','-bufsize','12M');
     if(hasAudio)args.push('-c:a','aac','-b:a','192k','-ar','48000','-af','aresample=async=1:first_pts=0');
     else args.push('-an');
-    args.push('-movflags','+faststart','-video_track_timescale','90000','-shortest','tiktok.mp4');
+    args.push('-movflags','+faststart','-video_track_timescale','90000','tiktok.mp4');
     setStatus('Video wird mit konstanter Bildrate neu codiert …');
     await ffmpeg.run(...args);
     const output=ffmpeg.FS('readFile','tiktok.mp4');
