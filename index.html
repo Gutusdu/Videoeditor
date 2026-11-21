@@ -66,14 +66,17 @@ $('export').onclick=async()=>{
     if(!mime)throw Error('Safari bietet auf diesem Gerät keine MP4-Aufnahme an.');
     const AudioContextClass=window.AudioContext||window.webkitAudioContext;
     const decoded=new Map();
+    let decodeCtx=null;
     for(let i=0;i<scenes.length;i++){
       if(!scenes[i].audio)continue;
       if(!AudioContextClass)throw Error('AudioContext wird nicht unterstützt.');
+      if(!decodeCtx)decodeCtx=new AudioContextClass();
       setStatus('Audio wird vorbereitet …');
       const response=await fetch(scenes[i].audio);
       if(!response.ok)throw Error('Eine Audiodatei konnte nicht geladen werden.');
-      decoded.set(i,await (new AudioContextClass()).decodeAudioData(await response.arrayBuffer()));
+      decoded.set(i,await decodeCtx.decodeAudioData(await response.arrayBuffer()));
     }
+    if(decodeCtx&&decodeCtx.state!=='closed')await decodeCtx.close();
     const durations=scenes.map((s,i)=>Math.max(1,+s.duration||5,decoded.has(i)?decoded.get(i).duration+0.35:0));
     const total=durations.reduce((a,b)=>a+b,0);
     // Jede Szene wird als eigener kurzer Clip aufgenommen. So muss Safari
