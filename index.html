@@ -58,7 +58,7 @@ $('load').onclick=()=>{let i=document.createElement('input');i.type='file';i.acc
 let playFrame=0; $('play').onclick=()=>{if(playing){playing=false;cancelAnimationFrame(playFrame);$('play').textContent='▶ Vorschau';return}playing=true;$('play').textContent='Ⅱ Stop';let sceneStart=performance.now(),sceneIndex=active;function step(now){if(!playing)return;let duration=Math.max(3,+scenes[sceneIndex].duration||5)*1000,p=Math.min(1,(now-sceneStart)/duration);active=sceneIndex;render(p);if(p>=1){sceneIndex=(sceneIndex+1)%scenes.length;active=sceneIndex;sceneStart=now;lists();editor()}playFrame=requestAnimationFrame(step)}playFrame=requestAnimationFrame(step)};
 $('export').onclick=async()=>{
   const btn=$('export');btn.disabled=true;
-  let audioCtx=null,recorder=null,stream=null,dest=null;
+  let audioCtx=null,recorder=null,stream=null,dest=null,ffmpeg=null;
   const setStatus=t=>$('status').textContent=t;
   try{
     if(!window.MediaRecorder||!c.captureStream)throw Error('Dieser Safari unterstützt die benötigte Videoaufnahme nicht.');
@@ -79,8 +79,6 @@ $('export').onclick=async()=>{
       }
       dest=audioCtx.createMediaStreamDestination();
     }
-    // Frames werden manuell in einem festen 30-FPS-Takt angefordert,
-    // damit TikTok keine unregelmäßigen Canvas-Zeitstempel interpretieren muss.
     let videoTrack;
     try{
       stream=c.captureStream(0);
@@ -122,8 +120,7 @@ $('export').onclick=async()=>{
             if(videoTrack&&typeof videoTrack.requestFrame==='function')videoTrack.requestFrame();
             if(elapsed-lastStatus>=0.5){
               lastStatus=elapsed;
-              const pct=Math.min(100,Math.round(elapsed/duration*100));
-              setStatus('Szene '+(i+1)+'/'+scenes.length+' wird aufgenommen … '+pct+'%');
+              setStatus('Szene '+(i+1)+'/'+scenes.length+' wird aufgenommen … '+Math.min(100,Math.round(elapsed/duration*100))+'%');
             }
             if(elapsed>=duration){clearInterval(timer);resolve()}
           }catch(e){clearInterval(timer);reject(e)}
@@ -131,13 +128,40 @@ $('export').onclick=async()=>{
       });
       if(source){try{source.stop()}catch{}source.disconnect();}
     }
-    setStatus('Video wird finalisiert …');
+    setStatus('Aufnahme abgeschlossen. TikTok-kompatible MP4 wird erstellt …');
     recorder.stop();
     await stopped;
-    const finalBlob=new Blob(chunks,{type:mime});
-    if(!finalBlob.size)throw Error('Die Videoaufnahme ist leer.');
-    download(finalBlob,'touchline-studio.mp4');
-    setStatus('MP4 erstellt. Alle Szenen wurden in einer durchgehenden Aufnahme exportiert. In Safari über das Download-Symbol sichern.');
+    const rawBlob=new Blob(chunks,{type:mime});
+    if(!rawBlob.size)throw Error('Die Videoaufnahme ist leer.');
+    if(!window.FFmpeg){
+      setStatus('Video wird für TikTok optimiert … Encoder wird geladen.');
+      await new Promise((resolve,reject)=>{
+        const script=document.createElement('script');
+        script.src='https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js';
+        script.onload=resolve;
+        script.onerror=()=>reject(new Error('Der Video-Encoder konnte nicht geladen werden. Bitte Internetverbindung prüfen.'));
+        document.head.appendChild(script);
+      });
+    }
+    if(!window.FFmpeg||!window.FFmpeg.createFFmpeg)throw Error('Der Video-Encoder ist nicht verfügbar.');
+    ffmpeg=window.FFmpeg.createFFmpeg({log:false,corePath:'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js'});
+    setStatus('TikTok-kompatible MP4 wird vorbereitet …');
+    await ffmpeg.load();
+    ffmpeg.FS('writeFile','source.mp4',new Uint8Array(await rawBlob.arrayBuffer()));
+    const hasAudio=decoded.size>0;
+    const args=['-i','source.mp4','-map','0:v:0'];
+    if(hasAudio)args.push('-map','0:a:0?');
+    args.push('-vf','fps=30,format=yuv420p','-r','30','-vsync','cfr','-c:v','libx264','-preset','ultrafast','-profile:v','high','-level','4.1','-pix_fmt','yuv420p','-b:v','6M','-maxrate','8M','-bufsize','12M');
+    if(hasAudio)args.push('-c:a','aac','-b:a','192k','-ar','48000','-af','aresample=async=1:first_pts=0');
+    else args.push('-an');
+    args.push('-movflags','+faststart','-video_track_timescale','90000','-shortest','tiktok.mp4');
+    setStatus('Video wird mit konstanter Bildrate neu codiert …');
+    await ffmpeg.run(...args);
+    const output=ffmpeg.FS('readFile','tiktok.mp4');
+    const finalBlob=new Blob([output.buffer],{type:'video/mp4'});
+    if(!finalBlob.size)throw Error('Die optimierte MP4-Datei ist leer.');
+    download(finalBlob,'touchline-studio-tiktok.mp4');
+    setStatus('TikTok-kompatible MP4 erstellt: H.264, konstante 30 FPS, AAC und optimierte MP4-Metadaten.');
   }catch(e){
     if(recorder&&recorder.state!=='inactive')try{recorder.stop()}catch{}
     setStatus('MP4-Export fehlgeschlagen: '+(e&&e.message?e.message:String(e)));
