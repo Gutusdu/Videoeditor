@@ -1,30 +1,44 @@
-# TOUCHLINE STUDIO
+# TOUCHLINE STUDIO 2.0
 
-A free, browser-based editor for football-analysis videos in vertical 9:16 format.
+A browser-based, local-first multitrack editor for vertical sports videos.
 
 ## Open
-Visit the published GitHub Pages site: https://gutusdu.github.io/Videoeditor/
 
-## Features
-- Responsive dark sports-broadcast interface
-- 1080 × 1920 video canvas for TikTok, Reels and Shorts
-- Scene templates: hook, statistics comparison, tactics board, player spotlight and prediction
-- Editable scene text, statistics, formations and probabilities
-- Reorder, duplicate and remove scenes
-- Animated title reveals and progressive statistic bars in the video export
-- Browser-native WebM export
-- Automatic local browser save plus manual JSON import/export
-- No account, paid API or server required
+https://gutusdu.github.io/Videoeditor/
 
-## Current limitations
-- Match and player statistics are entered manually; no live-data provider is connected.
-- No verified event-data feed, tracking data, automated heatmaps, pass maps or automatic tactical analysis.
-- Player portrait is a stylized placeholder, not a real player photo.
-- Export is WebM, not MP4. Voice-over recording, audio mixing and timed subtitle editing are not yet implemented.
-- Browser-local autosave is tied to the current browser/device. Export JSON to move a project elsewhere.
+## Studio 2.0
 
-## Data integrity
-Do not publish illustrative or placeholder values as real match statistics. Add reliable sources and verify all values before publishing.
+- Multi-track timeline for image, video, text and audio clips
+- Upload multiple files and automatically pair visual media with audio by matching file names
+- Matched audio duration determines the visual clip duration when media metadata is available
+- Drag clips to reposition them, move clips between compatible tracks, and trim either edge
+- Clip inspector for start time, duration, in-point, position, scale, opacity, rotation, fit mode and playback speed
+- Optional start-to-end keyframe interpolation for position, scale and opacity
+- Separate channel profiles for TOUCHLINE (football), TOUCHLINE FOOTBALL (American football) and TOUCHLINE MOTORSPORT
+- Per-channel outro storage and one-click outro insertion; quick montage appends the saved outro
+- Integrated Wikimedia Commons image search with license filtering and attribution details
+- IndexedDB autosave for the current project and media on the current browser/device
+- Project JSON export/import with media embedded; legacy scene-based TOUCHLINE JSON import
+- 1080 × 1920 project canvas for TikTok, Reels and Shorts
 
-## Technology
-Single-file HTML/CSS/JavaScript app. No build step.
+## Export
+
+The editor uses the browser's native MediaRecorder. It exports MP4 when the current browser exposes a compatible MP4/H.264 recorder; otherwise it exports WebM and uses the correct file extension. Export capability and performance depend on the browser and device. Test a short clip before relying on a long production export.
+
+## Existing pages and compatibility
+
+- `legacy.html` preserves the previous Build 30 scene-based editor.
+- `audience.html` remains available for private, manually entered TikTok analytics.
+- Existing scene-based JSON projects can be imported into Studio 2.0 and converted to timeline clips.
+
+## Storage and privacy
+
+Media and projects are processed in the browser. Autosave uses IndexedDB on the current device/browser. Use **Projekt exportieren** to create a portable backup. Clearing browser site data can remove local autosaves and channel outros.
+
+## Known limitations
+
+- There is no cloud sync between devices.
+- No live match-data provider or automated tactical/statistical feed is connected.
+- Browser-native export formats, codec support and performance vary by device.
+- Very large source files can exceed browser memory or local storage limits.
+- Wikimedia Commons licensing information is a starting point; verify the original file page and usage restrictions before publishing.
