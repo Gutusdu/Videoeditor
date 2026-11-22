@@ -96,7 +96,7 @@ $('export').onclick=async()=>{
     for(let i=0;i<scenes.length;i++){
       active=i;
       render(0);
-      const duration=Math.max(1,+scenes[i].duration||5,decoded.has(i)?decoded.get(i).duration+0.35:0);
+      const duration=decoded.has(i)?decoded.get(i).duration:Math.max(1,+scenes[i].duration||5);
       let source=null;
       if(decoded.has(i)){
         source=audioCtx.createBufferSource();
