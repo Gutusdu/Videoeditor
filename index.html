@@ -51,7 +51,7 @@
 @media(max-width:1100px){.tl2-grid{grid-template-columns:230px minmax(320px,1fr)}.tl2-inspector{grid-column:1/-1}.tl2-inspector .tl2-pad{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}}
 @media(max-width:700px){#tl2{padding:8px;gap:9px}.tl2-grid{display:flex;flex-direction:column}.tl2-library,.tl2-editor,.tl2-main{width:100%}.tl2-preview-wrap{min-height:0;padding:8px}#tl2Canvas{height:52vh;max-height:500px}.tl2-inspector .tl2-pad{display:block}#tl2TimelineScroll{max-height:400px}.tl2-track{height:58px}.tl2-clip{height:44px;top:6px}.tl2-track-label{width:86px;padding:5px;font-size:9px}.tl2-track-lane{left:86px}}
 </style></head><body>
-<header><div class="logo">TOUCHLINE <span>STUDIO</span></div><div style="display:flex;align-items:center;gap:6px"><span class="tag">MULTITRACK · LOKAL</span><span class="version" title="Website-Version und Build"><strong>STUDIO 2.0</strong> · BUILD 32</span><button id="new">Neues Projekt</button></div></header>
+<header><div class="logo">TOUCHLINE <span>STUDIO</span></div><div style="display:flex;align-items:center;gap:6px"><span class="tag">MULTITRACK · LOKAL</span><span class="version" title="Website-Version und Build"><strong>STUDIO 2.0</strong> · BUILD 33</span><button id="new">Neues Projekt</button></div></header>
 
 <section id="tl2">
  <div class="tl2-top">
@@ -64,7 +64,7 @@
  <div class="tl2-grid">
   <aside class="tl2-panel tl2-library">
    <div class="tl2-head">MEDIEN & PRODUKTION</div><div class="tl2-pad">
-    <div class="tl2-field"><label>MEDIEN HINZUFÜGEN</label><input id="tl2Files" type="file" accept="image/*,video/*,audio/*" multiple></div>
+    <div class="tl2-field"><label>MEDIEN HINZUFÜGEN</label><input id="tl2Files" type="file" accept="image/*,video/*" multiple></div><div class="tl2-field"><label>AUDIO SEPARAT HINZUFÜGEN</label><input id="tl2AudioFiles" type="file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.flac" multiple><div class="tl2-muted">MP3, M4A, WAV und weitere Audioformate</div></div>
     <div class="tl2-row"><button id="tl2AddTrack">+ Video-Spur</button><button id="tl2AddAudioTrack">+ Audio-Spur</button></div>
     <p class="tl2-muted">Bilder, Videos und Audios bleiben vollständig getrennt. Lade Audios hier mit hoch und setze sie über „+“ in der Medienbibliothek unabhängig auf eine Audiospur.</p>
     <div class="tl2-row"><button id="tl2AddText">+ Textclip</button><button id="tl2Outro">Outro anhängen</button></div>
@@ -296,7 +296,7 @@ function pointerDown(e){const clipEl=e.target.closest('.tl2-clip');if(clipEl){co
 function pointerMove(e){if(!drag)return;const c=clips.find(x=>x.id===drag.id);if(!c)return;let dx=(e.clientX-drag.x)/zoom,dy=e.clientY-drag.y;if(drag.mode==='move'){c.start=Math.max(0,drag.start+dx);const row=document.elementFromPoint(e.clientX,e.clientY)?.closest('.tl2-track');if(row){let tr=tracks.find(t=>t.id===row.dataset.track);if(tr&&((clipAsset(c)?.type==='audio')===(tr.type==='audio')))c.trackId=tr.id}}else if(drag.mode==='right')c.duration=Math.max(.2,drag.duration+dx);else{let shift=Math.min(drag.duration-.2,Math.max(-drag.start,dx));c.start=drag.start+shift;c.duration=Math.max(.2,drag.duration-shift);c.inPoint=Math.max(0,drag.inPoint+shift*(c.speed||1))}renderTimeline();render()}
 function pointerUp(){if(drag){drag=null;inspector();scheduleSave();status('Timeline-Änderung übernommen.')}}
 $('tl2Timeline').addEventListener('pointerdown',pointerDown);window.addEventListener('pointermove',pointerMove);window.addEventListener('pointerup',pointerUp);
-$('tl2Files').onchange=e=>importFiles(e.target.files);
+$('tl2Files').onchange=e=>importFiles(e.target.files);$('tl2AudioFiles').onchange=e=>{const files=e.target.files;if(files?.length)importFiles(files);e.target.value=''};
 $('tl2AddTrack').onclick=()=>{addTrack('visual');renderTimeline();scheduleSave();status('Neue Videospur angelegt.')};$('tl2AddAudioTrack').onclick=()=>{addTrack('audio');renderTimeline();scheduleSave();status('Neue Audiospur angelegt.')};$('tl2AddText').onclick=addText;$('tl2Play').onclick=play;$('tl2Stop').onclick=()=>{play();playhead=0;renderAll()};$('tl2Zoom').oninput=e=>{zoom=Number(e.target.value);renderTimeline()};
 $('tl2Channel').onchange=e=>{channel=e.target.value;status('Kanal gewechselt: '+channels[channel].name)};
 $('tl2New').onclick=()=>{if(confirm('Neues Projekt starten?')){assets=[];clips=[];tracks=[{id:'v1',name:'VIDEO 1',type:'visual'},{id:'v2',name:'OVERLAYS',type:'visual'},{id:'a1',name:'AUDIO 1',type:'audio'}];selected=null;playhead=0;renderAll();status('Neues Projekt gestartet.')}};
